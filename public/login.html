@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Memorias</title>
+    <link rel="icon" href="/assets/logos/logo-memorias-anuario-digital.png">
+    <link rel="stylesheet" href="/login.css">
+    <script src="/login.js" defer></script>
+  </head>
+  <body>
+    <main class="login-shell">
+      <section class="login-card" aria-labelledby="loginTitulo">
+        <a class="back-link" href="/">Voltar ao anuario</a>
+        <img src="/assets/logos/logo-memorias-anuario-digital.png" alt="Logo Memorias">
+        <p class="eyebrow">Area administrativa</p>
+        <h1 id="loginTitulo">Entrar no painel</h1>
+        <p class="login-copy">
+          Use o usuario admin para liberar criacao de alunos, fotos e eventos.
+        </p>
+
+        <form id="loginForm">
+          <label>
+            Usuario
+            <input id="usuario" name="usuario" type="text" autocomplete="username" required>
+          </label>
+          <label>
+            Senha
+            <input id="senha" name="senha" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Entrar</button>
+        </form>
+
+        <p class="status" id="loginStatus"></p>
+      </section>
+    </main>
+  </body>
+</html>

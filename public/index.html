@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Memorias - Anuario Digital</title>
+    <link rel="icon" href="/assets/logos/logo-memorias-anuario-digital.png">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header" id="inicio">
+      <nav class="topbar" aria-label="Navegacao principal">
+        <a class="brand" href="#inicio" aria-label="Voltar ao inicio">
+          <img src="/assets/logos/logo-memorias-anuario-digital.png" alt="Logo Memorias">
+          <span>Memorias</span>
+        </a>
+        <div class="nav-links">
+          <a href="#alunos">Alunos</a>
+          <a href="#galeria">Galeria</a>
+          <a href="#eventos">Eventos</a>
+          <a href="#admin">Admin</a>
+        </div>
+        <div class="session-actions">
+          <span id="sessionStatus" class="session-status">Visitante</span>
+          <a class="button button-light" id="loginLink" href="/login.html">Login</a>
+          <button class="icon-button hidden" id="logoutButton" type="button" aria-label="Sair">Sair</button>
+        </div>
+      </nav>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">UFRN / IMD - Anuario Digital</p>
+          <h1>Memorias da turma, alunos e momentos em um so lugar.</h1>
+          <p>
+            Um MVP para registrar perfis, fotos e eventos academicos com API Go,
+            PostgreSQL, JWT e rotas protegidas.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#alunos">Ver alunos</a>
+            <a class="button button-light" href="#eventos">Linha do tempo</a>
+          </div>
+        </div>
+        <div class="hero-media" aria-label="Fotos da turma">
+          <img class="hero-photo hero-photo-large" src="/assets/fotos/fotos-da-turma-1.jpg" alt="Turma reunida">
+          <img class="hero-photo hero-photo-small" src="/assets/fotos/whatsapp-turma.jpg" alt="Registro da turma">
+          <img class="hero-logo" src="/assets/logos/logo-ufrn.png" alt="Logo UFRN">
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section class="intro-band" aria-labelledby="sobreTitulo">
+        <div>
+          <img src="/assets/logos/logo-infounity18.png" alt="Logo da turma">
+        </div>
+        <div>
+          <h2 id="sobreTitulo">Sobre o MVP</h2>
+          <p>
+            Inspirado no projeto visual original, este front consome os endpoints
+            atuais da API: alunos, fotos, eventos, login e refresh token.
+          </p>
+        </div>
+        <dl class="stats">
+          <div>
+            <dt id="studentCount">0</dt>
+            <dd>alunos</dd>
+          </div>
+          <div>
+            <dt id="eventCount">0</dt>
+            <dd>eventos</dd>
+          </div>
+          <div>
+            <dt>1:N</dt>
+            <dd>aluno/fotos</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="section" id="alunos" aria-labelledby="alunosTitulo">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Perfis</p>
+            <h2 id="alunosTitulo">Alunos</h2>
+          </div>
+          <button class="button button-light" id="refreshStudents" type="button">Atualizar</button>
+        </div>
+        <div class="status-line" id="studentsStatus">Carregando alunos...</div>
+        <div class="student-grid" id="studentsGrid"></div>
+      </section>
+
+      <section class="section gallery-section" id="galeria" aria-labelledby="galeriaTitulo">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Registros</p>
+            <h2 id="galeriaTitulo">Galeria</h2>
+          </div>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+          <figure>
+            <img src="/assets/fotos/fotos-da-turma-1.jpg" alt="Foto da turma">
+            <figcaption>Primeiro registro da turma</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/fotos/fotos-da-turma-10.jpg" alt="Momento academico da turma">
+            <figcaption>Momento academico</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/fotos/whatsapp-turma.jpg" alt="Foto coletiva">
+            <figcaption>Memoria coletiva</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" id="eventos" aria-labelledby="eventosTitulo">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Linha do tempo</p>
+            <h2 id="eventosTitulo">Eventos e momentos</h2>
+          </div>
+          <button class="button button-light" id="refreshEvents" type="button">Atualizar</button>
+        </div>
+        <div class="status-line" id="eventsStatus">Carregando eventos...</div>
+        <div class="timeline" id="eventsTimeline"></div>
+      </section>
+
+      <section class="admin-panel hidden" id="admin" aria-labelledby="adminTitulo">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Area protegida</p>
+            <h2 id="adminTitulo">Painel admin</h2>
+          </div>
+          <span class="badge">Bearer JWT</span>
+        </div>
+
+        <div class="admin-grid">
+          <form class="form-surface" id="studentForm">
+            <h3>Novo aluno</h3>
+            <label>
+              Nome
+              <input name="nome" type="text" minlength="3" maxlength="120" required>
+            </label>
+            <label>
+              Foto URL
+              <input name="foto" type="url" placeholder="https://example.com/foto.jpg">
+            </label>
+            <label>
+              Turma
+              <input name="turma" type="text" maxlength="30" placeholder="2026.1">
+            </label>
+            <button class="button" type="submit">Criar aluno</button>
+          </form>
+
+          <form class="form-surface" id="photoForm">
+            <h3>Adicionar foto a aluno</h3>
+            <label>
+              ID do aluno
+              <input name="aluno_id" type="number" min="1" required>
+            </label>
+            <label>
+              URL da foto
+              <input name="url" type="url" required>
+            </label>
+            <label>
+              Legenda
+              <input name="legenda" type="text" maxlength="180">
+            </label>
+            <button class="button" type="submit">Vincular foto</button>
+          </form>
+
+          <form class="form-surface" id="eventForm">
+            <h3>Novo evento</h3>
+            <label>
+              Titulo
+              <input name="titulo" type="text" minlength="3" maxlength="160" required>
+            </label>
+            <label>
+              Descricao
+              <textarea name="descricao" minlength="5" required></textarea>
+            </label>
+            <label>
+              Data
+              <input name="data" type="date" required>
+            </label>
+            <label>
+              Imagem URL
+              <input name="imagem_url" type="url">
+            </label>
+            <button class="button" type="submit">Criar evento</button>
+          </form>
+        </div>
+        <div class="status-line" id="adminStatus"></div>
+      </section>
+    </main>
+
+    <dialog class="student-dialog" id="studentDialog">
+      <button class="dialog-close" id="closeStudentDialog" type="button" aria-label="Fechar">x</button>
+      <img id="dialogPhoto" src="/assets/logos/logo-memorias-anuario-digital.png" alt="">
+      <div>
+        <p class="eyebrow">Perfil</p>
+        <h2 id="dialogName">Aluno</h2>
+        <p id="dialogClass"></p>
+        <div id="dialogPhotos" class="dialog-photos"></div>
+      </div>
+    </dialog>
+
+    <footer class="footer">
+      <p>Memorias - Anuario Digital</p>
+      <p>API Go + Chi + PostgreSQL + JWT</p>
+    </footer>
+  </body>
+</html>

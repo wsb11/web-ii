@@ -70,6 +70,7 @@ func main() {
 func router(tokenMaker *auth.JWTManager) http.Handler {
 	r := chi.NewRouter()
 	authLimiter := customMiddleware.NewRateLimiter(5, time.Minute)
+	fileServer := http.FileServer(http.Dir("public"))
 
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
@@ -106,6 +107,8 @@ func router(tokenMaker *auth.JWTManager) http.Handler {
 			r.Delete("/eventos/{id}", controller.RemoverEvento)
 		})
 	})
+
+	r.Handle("/*", fileServer)
 
 	return r
 }

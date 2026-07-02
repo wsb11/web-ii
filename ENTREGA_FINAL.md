@@ -24,6 +24,15 @@ Ao usar PostgreSQL, o schema em `interno/db/schema.sql` e aplicado automaticamen
 
 ## Endpoints principais
 
+Frontend:
+
+| Rota | Descricao |
+|------|-----------|
+| `/` | Pagina principal do anuario com alunos, galeria, eventos e painel admin |
+| `/login.html` | Tela de login que consome `/api/v1/auth/login` |
+
+API:
+
 | Metodo | Rota | Descricao | Auth |
 |--------|------|-----------|------|
 | `POST` | `/api/v1/auth/login` | Login do admin, retorna JWT e refresh token | Publica |
