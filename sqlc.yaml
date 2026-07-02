@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "interno/db/schema.sql"
+    queries: "interno/db/query.sql"
+    gen:
+      go:
+        package: "db"
+        out: "interno/db"
+        sql_package: "database/sql"
+        emit_json_tags: true

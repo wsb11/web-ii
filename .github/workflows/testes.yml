@@ -1,19 +1,39 @@
 name: Go CI
+
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: anuario
+          POSTGRES_PASSWORD: anuario
+          POSTGRES_DB: anuario_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U anuario -d anuario_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      TEST_DATABASE_URL: postgres://anuario:anuario@localhost:5432/anuario_test?sslmode=disable
+
     steps:
       - uses: actions/checkout@v4
       - name: Configurar Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.26.1'
-      - name: Instalar dependências
-        run: go mod tidy
+          go-version: "1.26.1"
+      - name: Baixar dependencias
+        run: go mod download
       - name: Executar testes
-        run: go test ./... -v
+        run: go test ./... -v -count=1
