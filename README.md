@@ -8,8 +8,6 @@
 
 | Nome | Matrícula |
 |------|-----------|
-| Emilly Miller Moreira | 20230031417 |
-| Francisco Matheus Fonseca De Farias | 20220052923 |
 | Vinicios David Martins Bezerra | 20220062699 |
 | Weuler dos Santos Barbosa | 20220026576 |
 
