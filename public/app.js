@@ -3,6 +3,8 @@ const state = {
   eventos: [],
 };
 
+const visitorStudents = Array.isArray(window.ALUNOS_VISITANTE) ? window.ALUNOS_VISITANTE : [];
+
 const els = {
   sessionStatus: document.querySelector("#sessionStatus"),
   loginLink: document.querySelector("#loginLink"),
@@ -40,6 +42,7 @@ function bindSession() {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("token_type");
     updateSessionUI();
+    loadStudents();
   });
 
   document.querySelector("#closeStudentDialog").addEventListener("click", () => {
@@ -97,16 +100,17 @@ function bindForms() {
 
 async function loadStudents() {
   if (!hasToken()) {
-    state.alunos = [];
-    els.studentCount.textContent = "0";
-    els.studentsGrid.innerHTML = "";
-    els.studentsStatus.textContent = "Faca login para carregar os alunos.";
+    renderVisitorStudents();
     return;
   }
 
   els.studentsStatus.textContent = "Carregando alunos...";
   try {
     const response = await apiFetch("/api/v1/alunos");
+    if (response.status === 401 && !hasToken()) {
+      renderVisitorStudents();
+      return;
+    }
     if (!response.ok) {
       throw new Error("Falha ao carregar alunos");
     }
@@ -119,6 +123,18 @@ async function loadStudents() {
   } catch (error) {
     els.studentsStatus.textContent = "Nao foi possivel carregar os alunos.";
   }
+}
+
+function renderVisitorStudents() {
+  state.alunos = visitorStudents.map((aluno) => ({
+    ...aluno,
+    fotos: aluno.fotos || (aluno.foto ? [{ url: aluno.foto, legenda: "Foto de perfil" }] : []),
+  }));
+  els.studentCount.textContent = state.alunos.length;
+  renderStudents();
+  els.studentsStatus.textContent = state.alunos.length
+    ? "Clique em um card para ver fotos aninhadas."
+    : "Nenhum aluno cadastrado.";
 }
 
 async function loadEvents() {
@@ -238,7 +254,12 @@ function renderEvents() {
 
 async function openStudent(id) {
   if (!hasToken()) {
-    els.studentsStatus.textContent = "Faca login para abrir o perfil do aluno.";
+    const aluno = state.alunos.find((item) => String(item.id) === String(id));
+    if (aluno) {
+      showStudentDialog(aluno);
+    } else {
+      els.studentsStatus.textContent = "Nao foi possivel abrir o perfil do aluno.";
+    }
     return;
   }
 
@@ -248,27 +269,31 @@ async function openStudent(id) {
       throw new Error("Aluno nao encontrado");
     }
     const aluno = await response.json();
-    els.dialogPhoto.src = aluno.foto || "/assets/logos/logo-memorias-anuario-digital.png";
-    els.dialogPhoto.alt = `Foto de ${aluno.nome}`;
-    els.dialogName.textContent = aluno.nome;
-    els.dialogClass.textContent = aluno.turma || "Turma nao informada";
-    els.dialogPhotos.innerHTML = "";
-
-    if (aluno.fotos && aluno.fotos.length) {
-      aluno.fotos.forEach((foto) => {
-        const img = document.createElement("img");
-        img.src = foto.url;
-        img.alt = foto.legenda || `Foto vinculada ao aluno ${aluno.nome}`;
-        els.dialogPhotos.append(img);
-      });
-    } else {
-      els.dialogPhotos.textContent = "Sem fotos vinculadas ainda.";
-    }
-
-    els.studentDialog.showModal();
+    showStudentDialog(aluno);
   } catch (error) {
     els.studentsStatus.textContent = "Nao foi possivel abrir o perfil do aluno.";
   }
+}
+
+function showStudentDialog(aluno) {
+  els.dialogPhoto.src = aluno.foto || "/assets/logos/logo-memorias-anuario-digital.png";
+  els.dialogPhoto.alt = `Foto de ${aluno.nome}`;
+  els.dialogName.textContent = aluno.nome;
+  els.dialogClass.textContent = aluno.turma || "Turma nao informada";
+  els.dialogPhotos.innerHTML = "";
+
+  if (aluno.fotos && aluno.fotos.length) {
+    aluno.fotos.forEach((foto) => {
+      const img = document.createElement("img");
+      img.src = foto.url;
+      img.alt = foto.legenda || `Foto vinculada ao aluno ${aluno.nome}`;
+      els.dialogPhotos.append(img);
+    });
+  } else {
+    els.dialogPhotos.textContent = "Sem fotos vinculadas ainda.";
+  }
+
+  els.studentDialog.showModal();
 }
 
 async function editStudent(aluno) {
@@ -402,11 +427,6 @@ async function refreshToken() {
 
 function updateSessionUI() {
   const authenticated = hasToken();
-  if (!authenticated) {
-    state.alunos = [];
-    els.studentCount.textContent = "0";
-    els.studentsGrid.innerHTML = "";
-  }
   els.sessionStatus.textContent = authenticated ? "Admin" : "Visitante";
   els.loginLink.classList.toggle("hidden", authenticated);
   els.logoutButton.classList.toggle("hidden", !authenticated);
