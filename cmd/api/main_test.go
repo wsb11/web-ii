@@ -31,6 +31,9 @@ func TestRouterProtegeRotasDeAlunosComJWT(t *testing.T) {
 		{name: "lista", path: "/api/v1/alunos"},
 		{name: "detalhe", path: "/api/v1/alunos/1"},
 		{name: "fotos", path: "/api/v1/alunos/1/fotos"},
+		{name: "lista publica", path: "/api/v1/public/alunos"},
+		{name: "detalhe publico", path: "/api/v1/public/alunos/1"},
+		{name: "fotos publicas", path: "/api/v1/public/alunos/1/fotos"},
 	}
 
 	for _, tt := range tests {
@@ -62,21 +65,6 @@ func TestRouterListaAlunosComJWTAdmin(t *testing.T) {
 
 	if rec.Code != http.StatusOK {
 		t.Fatalf("esperado 200 com JWT admin, obtido %d", rec.Code)
-	}
-	if rec.Header().Get("Content-Type") != "application/json" {
-		t.Fatal("Content-Type deve ser application/json")
-	}
-}
-
-func TestRouterListaAlunosPublicosParaFrontend(t *testing.T) {
-	_, handler := setupRouterTest(t)
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/public/alunos", nil)
-	rec := httptest.NewRecorder()
-
-	handler.ServeHTTP(rec, req)
-
-	if rec.Code != http.StatusOK {
-		t.Fatalf("esperado 200 na rota publica do frontend, obtido %d", rec.Code)
 	}
 	if rec.Header().Get("Content-Type") != "application/json" {
 		t.Fatal("Content-Type deve ser application/json")
