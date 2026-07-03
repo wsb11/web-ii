@@ -67,3 +67,18 @@ func TestRouterListaAlunosComJWTAdmin(t *testing.T) {
 		t.Fatal("Content-Type deve ser application/json")
 	}
 }
+
+func TestRouterListaAlunosPublicosParaFrontend(t *testing.T) {
+	_, handler := setupRouterTest(t)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/public/alunos", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("esperado 200 na rota publica do frontend, obtido %d", rec.Code)
+	}
+	if rec.Header().Get("Content-Type") != "application/json" {
+		t.Fatal("Content-Type deve ser application/json")
+	}
+}

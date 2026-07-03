@@ -3,6 +3,8 @@ const state = {
   eventos: [],
 };
 
+const publicStudentsPath = "/api/v1/public/alunos";
+
 const els = {
   sessionStatus: document.querySelector("#sessionStatus"),
   loginLink: document.querySelector("#loginLink"),
@@ -96,17 +98,9 @@ function bindForms() {
 }
 
 async function loadStudents() {
-  if (!hasToken()) {
-    state.alunos = [];
-    els.studentCount.textContent = "0";
-    els.studentsGrid.innerHTML = "";
-    els.studentsStatus.textContent = "Faca login para visualizar os alunos.";
-    return;
-  }
-
   els.studentsStatus.textContent = "Carregando alunos...";
   try {
-    const response = await apiFetch("/api/v1/alunos");
+    const response = await fetch(publicStudentsPath);
     if (!response.ok) {
       throw new Error("Falha ao carregar alunos");
     }
@@ -237,13 +231,8 @@ function renderEvents() {
 }
 
 async function openStudent(id) {
-  if (!hasToken()) {
-    els.studentsStatus.textContent = "Faca login para abrir o perfil do aluno.";
-    return;
-  }
-
   try {
-    const response = await apiFetch(`/api/v1/alunos/${id}`);
+    const response = await fetch(`${publicStudentsPath}/${id}`);
     if (!response.ok) {
       throw new Error("Aluno nao encontrado");
     }
@@ -402,11 +391,6 @@ async function refreshToken() {
 
 function updateSessionUI() {
   const authenticated = hasToken();
-  if (!authenticated) {
-    state.alunos = [];
-    els.studentCount.textContent = "0";
-    els.studentsGrid.innerHTML = "";
-  }
   els.sessionStatus.textContent = authenticated ? "Admin" : "Visitante";
   els.loginLink.classList.toggle("hidden", authenticated);
   els.logoutButton.classList.toggle("hidden", !authenticated);

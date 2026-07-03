@@ -86,6 +86,10 @@ func router(tokenMaker *auth.JWTManager) http.Handler {
 		r.With(authLimiter.Middleware).Post("/auth/login", controller.Login)
 		r.With(authLimiter.Middleware).Post("/auth/refresh", controller.Refresh)
 
+		r.Get("/public/alunos", controller.ListarAlunos)
+		r.Get("/public/alunos/{id}", controller.ObterAluno)
+		r.Get("/public/alunos/{id}/fotos", controller.ListarFotosDoAluno)
+
 		r.Get("/eventos", controller.ListarEventos)
 		r.Get("/eventos/{id}", controller.ObterEvento)
 
