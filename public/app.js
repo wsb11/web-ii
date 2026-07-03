@@ -114,22 +114,22 @@ async function loadStudents() {
     if (!response.ok) {
       throw new Error("Falha ao carregar alunos");
     }
-    state.alunos = await response.json();
-    els.studentCount.textContent = state.alunos.length;
-    renderStudents();
-    els.studentsStatus.textContent = state.alunos.length
-      ? "Clique em um card para ver fotos aninhadas."
-      : "Nenhum aluno cadastrado.";
+    setStudents(await response.json());
   } catch (error) {
     els.studentsStatus.textContent = "Nao foi possivel carregar os alunos.";
   }
 }
 
 function renderVisitorStudents() {
-  state.alunos = visitorStudents.map((aluno) => ({
+  const alunos = visitorStudents.map((aluno) => ({
     ...aluno,
     fotos: aluno.fotos || (aluno.foto ? [{ url: aluno.foto, legenda: "Foto de perfil" }] : []),
   }));
+  setStudents(alunos);
+}
+
+function setStudents(alunos) {
+  state.alunos = alunos;
   els.studentCount.textContent = state.alunos.length;
   renderStudents();
   els.studentsStatus.textContent = state.alunos.length

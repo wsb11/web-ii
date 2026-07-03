@@ -24,46 +24,24 @@ type MemoryStore struct {
 }
 
 func NewMemoryStore() *MemoryStore {
+	alunos := demoAlunosComID()
+	fotos := demoFotos()
+
 	return &MemoryStore{
-		alunos: []model.Aluno{
-			{ID: 1, Nome: "Ana Beatriz Bezerra Soares", Foto: "/uploads/alunos/ana-beatriz-bezerra-soares.jpg", Turma: "2026.1"},
-			{ID: 2, Nome: "Anna Karollyne Cassiano", Foto: "/uploads/alunos/anna-karollyne-cassiano.jpg", Turma: "2026.1"},
-			{ID: 3, Nome: "Davi Gabriel Souza de Oliveira", Foto: "/uploads/alunos/davi-gabriel-oliveira.jpg", Turma: "2026.1"},
-			{ID: 4, Nome: "Deborah Ruth da Silva", Foto: "/uploads/alunos/deborah-ruth-silva.jpg", Turma: "2026.1"},
-			{ID: 5, Nome: "Emanuel Kywal Pinto Cabral Filho", Foto: "/uploads/alunos/emanuel-kywal-cabral.jpg", Turma: "2026.1"},
-			{ID: 6, Nome: "Emmanoel Pedro Fonseca de Alcantara", Foto: "/uploads/alunos/emmanoel-pedro-alcantara.jpg", Turma: "2026.1"},
-			{ID: 7, Nome: "Felipe Matheus da Silva", Foto: "/uploads/alunos/felipe-matheus-silva.jpg", Turma: "2026.1"},
-			{ID: 8, Nome: "Flexsivone Bezerra Oliveira", Foto: "/uploads/alunos/flexsivone-oliveira.jpg", Turma: "2026.1"},
-			{ID: 9, Nome: "Iorrannes Firmino da Silva", Foto: "/uploads/alunos/iorrannes-firmino-silva.jpg", Turma: "2026.1"},
-			{ID: 10, Nome: "Joao Paulo de Oliveira Cabral", Foto: "/uploads/alunos/joao-paulo-cabral.jpg", Turma: "2026.1"},
-			{ID: 11, Nome: "Joao Pedro Pereira Frutuoso", Foto: "/uploads/alunos/joao-pedro-frutuoso.jpg", Turma: "2026.1"},
-			{ID: 12, Nome: "Keven Diego da Rocha Barbosa", Foto: "/uploads/alunos/keven-diego-barbosa.jpg", Turma: "2026.1"},
-			{ID: 13, Nome: "Layza Wanessa de Souza Araujo", Foto: "/uploads/alunos/layza-wanessa-araujo.jpg", Turma: "2026.1"},
-			{ID: 14, Nome: "Leticia Gondim Guilherme", Foto: "/uploads/alunos/leticia-gondim-guilherme.jpg", Turma: "2026.1"},
-			{ID: 15, Nome: "Lourival Cirilo de Assis Neto", Foto: "/uploads/alunos/lourival-cirilo-neto.jpg", Turma: "2026.1"},
-			{ID: 16, Nome: "Lucas Jordan Costa da Silva", Foto: "/uploads/alunos/lucas-jordan-silva.jpg", Turma: "2026.1"},
-			{ID: 17, Nome: "Lucas Marley de Souza Lima", Foto: "/uploads/alunos/lucas-marley-lima.jpg", Turma: "2026.1"},
-			{ID: 18, Nome: "Luis Eduardo Pires dos Santos", Foto: "/uploads/alunos/luis-eduardo-santos.jpg", Turma: "2026.1"},
-			{ID: 19, Nome: "Maria Joaquina Matias da Silva Oliveira", Foto: "/uploads/alunos/maria-joaquina-oliveira.jpg", Turma: "2026.1"},
-			{ID: 20, Nome: "Maria Luiza dos Santos Silva", Foto: "/uploads/alunos/maria-luiza-silva.jpg", Turma: "2026.1"},
-			{ID: 21, Nome: "Maria Luiza Sousa dos Santos", Foto: "/uploads/alunos/maria-luiza-sousa-santos.jpg", Turma: "2026.1"},
-		},
+		alunos: alunos,
 		eventos: []model.Evento{
 			{ID: 1, Titulo: "Aula Inaugural", Descricao: "Primeira aula do semestre", Data: "2026-02-15"},
 			{ID: 2, Titulo: "Semana de Tecnologia", Descricao: "Palestras e workshops", Data: "2026-06-20"},
 			{ID: 3, Titulo: "Formatura", Descricao: "Colacao de grau", Data: "2029-12-10"},
 			{ID: 4, Titulo: "Feira de Estagio", Descricao: "Oportunidades de estagio", Data: "2026-09-05"},
 		},
-		fotos: []model.Foto{
-			{ID: 1, AlunoID: 1, URL: "/uploads/alunos/ana-beatriz-bezerra-soares.jpg", Legenda: "Foto de perfil"},
-			{ID: 2, AlunoID: 11, URL: "/uploads/alunos/joao-pedro-frutuoso.jpg", Legenda: "Foto de perfil"},
-		},
+		fotos: fotos,
 		admins: []model.Admin{
 			{ID: 1, Usuario: "admin", SenhaHash: auth.MustHashPassword("admin123"), Role: "admin"},
 		},
-		nextAlunoID:  22,
+		nextAlunoID:  len(alunos) + 1,
 		nextEventoID: 5,
-		nextFotoID:   3,
+		nextFotoID:   len(fotos) + 1,
 		nextTokenID:  1,
 	}
 }

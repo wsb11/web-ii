@@ -93,12 +93,8 @@ func router(tokenMaker *auth.JWTManager) http.Handler {
 			r.Use(customMiddleware.AutenticacaoJWT(tokenMaker))
 			r.Use(customMiddleware.AutorizarRole("admin"))
 
-			r.Get("/alunos", controller.ListarAlunos)
-			r.Get("/alunos/{id}", controller.ObterAluno)
-			r.Get("/alunos/{id}/fotos", controller.ListarFotosDoAluno)
-			r.Get("/public/alunos", controller.ListarAlunos)
-			r.Get("/public/alunos/{id}", controller.ObterAluno)
-			r.Get("/public/alunos/{id}/fotos", controller.ListarFotosDoAluno)
+			registrarLeituraAlunos(r, "/alunos")
+			registrarLeituraAlunos(r, "/public/alunos")
 			r.Post("/alunos", controller.CriarAluno)
 			r.Put("/alunos/{id}", controller.AtualizarAluno)
 			r.Delete("/alunos/{id}", controller.RemoverAluno)
@@ -113,6 +109,12 @@ func router(tokenMaker *auth.JWTManager) http.Handler {
 	r.Handle("/*", fileServer)
 
 	return r
+}
+
+func registrarLeituraAlunos(r chi.Router, base string) {
+	r.Get(base, controller.ListarAlunos)
+	r.Get(base+"/{id}", controller.ObterAluno)
+	r.Get(base+"/{id}/fotos", controller.ListarFotosDoAluno)
 }
 
 func getenv(key, fallback string) string {
