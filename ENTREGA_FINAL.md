@@ -37,9 +37,9 @@ API:
 |--------|------|-----------|------|
 | `POST` | `/api/v1/auth/login` | Login do admin, retorna JWT e refresh token | Publica |
 | `POST` | `/api/v1/auth/refresh` | Rotaciona refresh token e retorna novo JWT | Publica com refresh token |
-| `GET` | `/api/v1/alunos` | Lista alunos | Publica |
-| `GET` | `/api/v1/alunos/{id}` | Detalhe do aluno com fotos aninhadas `1:N` | Publica |
-| `GET` | `/api/v1/alunos/{id}/fotos` | Lista fotos de um aluno | Publica |
+| `GET` | `/api/v1/alunos` | Lista alunos | Bearer JWT admin |
+| `GET` | `/api/v1/alunos/{id}` | Detalhe do aluno com fotos aninhadas `1:N` | Bearer JWT admin |
+| `GET` | `/api/v1/alunos/{id}/fotos` | Lista fotos de um aluno | Bearer JWT admin |
 | `POST` | `/api/v1/alunos` | Cria aluno | Bearer JWT admin |
 | `PUT` | `/api/v1/alunos/{id}` | Atualiza aluno | Bearer JWT admin |
 | `DELETE` | `/api/v1/alunos/{id}` | Remove aluno | Bearer JWT admin |

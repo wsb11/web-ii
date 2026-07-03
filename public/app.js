@@ -20,7 +20,10 @@ const els = {
   dialogName: document.querySelector("#dialogName"),
   dialogClass: document.querySelector("#dialogClass"),
   dialogPhotos: document.querySelector("#dialogPhotos"),
+  toastMessage: document.querySelector("#toastMessage"),
 };
+
+let toastTimer;
 
 document.addEventListener("DOMContentLoaded", () => {
   bindSession();
@@ -84,16 +87,26 @@ function bindForms() {
       method: "POST",
       body: JSON.stringify(data),
     });
-    await handleMutation(response, "Evento criado com sucesso.");
-    event.currentTarget.reset();
-    loadEvents();
+    const saved = await handleMutation(response, "Evento adicionado com sucesso.");
+    if (saved) {
+      event.currentTarget.reset();
+      loadEvents();
+    }
   });
 }
 
 async function loadStudents() {
+  if (!hasToken()) {
+    state.alunos = [];
+    els.studentCount.textContent = "0";
+    els.studentsGrid.innerHTML = "";
+    els.studentsStatus.textContent = "Faca login para visualizar os alunos.";
+    return;
+  }
+
   els.studentsStatus.textContent = "Carregando alunos...";
   try {
-    const response = await fetch("/api/v1/alunos");
+    const response = await apiFetch("/api/v1/alunos");
     if (!response.ok) {
       throw new Error("Falha ao carregar alunos");
     }
@@ -205,12 +218,17 @@ function renderEvents() {
       const actions = document.createElement("div");
       actions.className = "card-actions";
 
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.textContent = "Editar";
+      editButton.addEventListener("click", () => editEvent(evento));
+
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
       deleteButton.textContent = "Excluir";
       deleteButton.addEventListener("click", () => deleteEvent(evento.id));
 
-      actions.append(deleteButton);
+      actions.append(editButton, deleteButton);
       card.append(actions);
     }
 
@@ -219,8 +237,13 @@ function renderEvents() {
 }
 
 async function openStudent(id) {
+  if (!hasToken()) {
+    els.studentsStatus.textContent = "Faca login para abrir o perfil do aluno.";
+    return;
+  }
+
   try {
-    const response = await fetch(`/api/v1/alunos/${id}`);
+    const response = await apiFetch(`/api/v1/alunos/${id}`);
     if (!response.ok) {
       throw new Error("Aluno nao encontrado");
     }
@@ -270,6 +293,36 @@ async function deleteStudent(id) {
   loadStudents();
 }
 
+async function editEvent(evento) {
+  const titulo = window.prompt("Novo titulo do evento:", evento.titulo);
+  if (!titulo) {
+    return;
+  }
+  const descricao = window.prompt("Nova descricao do evento:", evento.descricao);
+  if (!descricao) {
+    return;
+  }
+  const data = window.prompt("Data do evento (YYYY-MM-DD):", evento.data);
+  if (!data) {
+    return;
+  }
+  const imagemURL = window.prompt("Imagem URL:", evento.imagem_url || "") || evento.imagem_url || "";
+
+  const response = await apiFetch(`/api/v1/eventos/${evento.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      titulo,
+      descricao,
+      data,
+      imagem_url: imagemURL,
+    }),
+  });
+  const saved = await handleMutation(response, "Evento atualizado com sucesso.");
+  if (saved) {
+    loadEvents();
+  }
+}
+
 async function deleteEvent(id) {
   const response = await apiFetch(`/api/v1/eventos/${id}`, { method: "DELETE" });
   await handleMutation(response, "Evento removido.");
@@ -278,8 +331,8 @@ async function deleteEvent(id) {
 
 async function handleMutation(response, successMessage) {
   if (response.ok) {
-    els.adminStatus.textContent = successMessage;
-    return;
+    showMessage(successMessage);
+    return true;
   }
 
   let data = {};
@@ -288,7 +341,21 @@ async function handleMutation(response, successMessage) {
   } catch (error) {
     data = {};
   }
-  els.adminStatus.textContent = data.erro || "A operacao falhou.";
+  showMessage(data.erro || "A operacao falhou.", true);
+  return false;
+}
+
+function showMessage(message, isError = false) {
+  els.adminStatus.textContent = message;
+  els.toastMessage.textContent = message;
+  els.toastMessage.classList.toggle("toast-error", isError);
+  els.toastMessage.classList.remove("hidden");
+
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    els.toastMessage.classList.add("hidden");
+    els.toastMessage.classList.remove("toast-error");
+  }, 4200);
 }
 
 async function apiFetch(url, options = {}) {
@@ -335,6 +402,11 @@ async function refreshToken() {
 
 function updateSessionUI() {
   const authenticated = hasToken();
+  if (!authenticated) {
+    state.alunos = [];
+    els.studentCount.textContent = "0";
+    els.studentsGrid.innerHTML = "";
+  }
   els.sessionStatus.textContent = authenticated ? "Admin" : "Visitante";
   els.loginLink.classList.toggle("hidden", authenticated);
   els.logoutButton.classList.toggle("hidden", !authenticated);

@@ -578,6 +578,24 @@ textarea {
   margin: 0;
 }
 
+.toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 20;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 14px 16px;
+  color: #fff;
+  background: var(--green-500);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-weight: 800;
+}
+
+.toast-error {
+  background: #b42318;
+}
+
 @media (max-width: 940px) {
   .topbar {
     align-items: flex-start;

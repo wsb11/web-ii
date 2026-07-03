@@ -82,8 +82,8 @@ func ValidarAluno(input AlunoInput) (AlunoInput, error) {
 	if len(input.Turma) > 30 {
 		return input, errors.New("turma deve ter no maximo 30 caracteres")
 	}
-	if input.Foto != "" && !urlHTTPValida(input.Foto) {
-		return input, errors.New("foto deve ser uma URL http ou https valida")
+	if input.Foto != "" && !urlImagemValida(input.Foto) {
+		return input, errors.New("foto deve ser URL http/https ou caminho local seguro")
 	}
 	return input, nil
 }
@@ -92,8 +92,8 @@ func ValidarFoto(input FotoInput) (FotoInput, error) {
 	input.URL = strings.TrimSpace(input.URL)
 	input.Legenda = sanitize(input.Legenda)
 
-	if !urlHTTPValida(input.URL) {
-		return input, errors.New("url da foto deve ser http ou https valida")
+	if !urlImagemValida(input.URL) {
+		return input, errors.New("url da foto deve ser http/https ou caminho local seguro")
 	}
 	if len(input.Legenda) > 180 {
 		return input, errors.New("legenda deve ter no maximo 180 caracteres")
@@ -119,8 +119,8 @@ func ValidarEvento(input EventoInput) (EventoInput, error) {
 	if _, err := time.Parse("2006-01-02", input.Data); err != nil {
 		return input, errors.New("data deve estar no formato YYYY-MM-DD")
 	}
-	if input.ImagemURL != "" && !urlHTTPValida(input.ImagemURL) {
-		return input, errors.New("imagem_url deve ser uma URL http ou https valida")
+	if input.ImagemURL != "" && !urlImagemValida(input.ImagemURL) {
+		return input, errors.New("imagem_url deve ser URL http/https ou caminho local seguro")
 	}
 	return input, nil
 }
@@ -129,10 +129,22 @@ func sanitize(value string) string {
 	return html.EscapeString(strings.TrimSpace(value))
 }
 
-func urlHTTPValida(value string) bool {
+func urlImagemValida(value string) bool {
+	if caminhoLocalSeguro(value) {
+		return true
+	}
 	parsed, err := url.ParseRequestURI(value)
 	if err != nil {
 		return false
 	}
 	return parsed.Scheme == "http" || parsed.Scheme == "https"
+}
+
+func caminhoLocalSeguro(value string) bool {
+	if !(strings.HasPrefix(value, "/uploads/") || strings.HasPrefix(value, "/assets/")) {
+		return false
+	}
+	return !strings.Contains(value, "..") &&
+		!strings.Contains(value, "\\") &&
+		!strings.Contains(value, "//")
 }
